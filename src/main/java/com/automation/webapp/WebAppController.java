@@ -7,6 +7,7 @@ import com.automation.webapp.model.FileFromJSON;
 import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.StringEntity;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,6 +22,10 @@ import java.util.List;
 
 @Controller
 public class WebAppController {
+    private static final String ROOT_API_URL = "http://localhost:8090/api";
+    private static final String REPOSITORIES_URL = "/repositories";
+    private static final String LOCAL_REPO_URL = "/localRepo";
+    private static final String GIT_REPO_URL = "/git";
     private static List<File> files;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -41,7 +46,7 @@ public class WebAppController {
         RestApiConnector restApiConnector = new RestApiConnector();
         Gson gson = new Gson();
         restApiConnector.setPostingString(new StringEntity(gson.toJson(openRepoRequest)));
-        restApiConnector.doCall("http://localhost:8090/api/repositories", HttpMethod.POST);
+        restApiConnector.doCall(ROOT_API_URL + REPOSITORIES_URL, HttpMethod.POST);
 
         if(restApiConnector.getStatusCode() != HttpStatus.SC_CREATED) {
             map.addAttribute("errorMessage", "couldn't read repo");
@@ -50,7 +55,24 @@ public class WebAppController {
             return "index";
         }
         restApiConnector = new RestApiConnector();
-        restApiConnector.doCall("http://localhost:8090/api/localRepo", HttpMethod.GET);
+        restApiConnector.doCall(ROOT_API_URL + LOCAL_REPO_URL, HttpMethod.GET);
+        files = FileFromJSON.map(restApiConnector.getResponse());
+        map.addAttribute("files", files);
+
+        return "files";
+    }
+
+    @RequestMapping(value = "/getFiles")
+    public String mainPage(ModelMap map) throws IOException {
+        RestApiConnector restApiConnector = new RestApiConnector();
+        restApiConnector.doCall(ROOT_API_URL + LOCAL_REPO_URL, HttpMethod.GET);
+        if(restApiConnector.getStatusCode() != HttpStatus.SC_OK) {
+            map.addAttribute("errorMessage", "Error happened so please login again");
+            map.addAttribute("response", restApiConnector.getResponse());
+            map.addAttribute("statusCode", restApiConnector.getStatusCode());
+            return "index";
+        }
+
         files = FileFromJSON.map(restApiConnector.getResponse());
         map.addAttribute("files", files);
 
@@ -66,5 +88,25 @@ public class WebAppController {
             }
         }
         return "scenarios";
+    }
+
+    @RequestMapping(value="/updateScenario", method = RequestMethod.POST)
+    public int updateScenario(@RequestParam(name = "fileName") String featureFileName,
+                              @RequestParam(name = "scenarioTitle") String scenarioTitle,
+                              HttpEntity<String> httpEntity) throws IOException {
+        RestApiConnector restApiConnector = new RestApiConnector();
+        restApiConnector.setPostingString(new StringEntity(httpEntity.getBody()));
+        restApiConnector.doCall(ROOT_API_URL + LOCAL_REPO_URL + "/" + featureFileName +
+                "/scenarios/search?scenarioTitle="+scenarioTitle, HttpMethod.POST);
+
+        return restApiConnector.getStatusCode();
+    }
+
+    @RequestMapping(value="/addCommitPush", method = RequestMethod.GET)
+    public int gitCommit(@RequestParam(name = "commitMessage") String message) throws IOException {
+        RestApiConnector restApiConnector = new RestApiConnector();
+        restApiConnector.doCall(ROOT_API_URL + GIT_REPO_URL + "/addCommitPush?commitMessage=" + message, HttpMethod.GET);
+
+        return restApiConnector.getStatusCode();
     }
 }

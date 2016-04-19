@@ -26,7 +26,7 @@
                     title: $scenarioTitle.val(),
                     content: $scenarioContent.val()
                 };
-                $.ajax("http://localhost:8090/localRepo/${file.fileName}/scenarios/search?scenarioTitle=" + encodeURIComponent(scenario.title), {
+                $.ajax("http://localhost:8080/updateScenario?fileName=${file.fileName}&scenarioTitle=" + encodeURIComponent(scenario.title), {
                     data: JSON.stringify(newscenario),
                     contentType : 'application/json',
                     type: 'POST',
@@ -52,7 +52,7 @@
             ${descriptionLine}
         </#list>
     </p>
-    <a href="???" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+    <a href="/getFiles" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
 </div>
 <table class="table table-striped">
     <thead>
