@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search results</title>
+    <title>${file.title}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="application/javascript">
@@ -11,7 +11,6 @@
             var $scenarioTitle = $modal.find("#scenario-title");
             var $scenarioContent = $modal.find("#scenario-content");
             var scenario = {};
-            var fileName = "";
             $('button.scenario-edit').click(function(e) {
                 e.preventDefault();
                 $button = $(this);
@@ -19,7 +18,6 @@
                     title: $button.data('scenario'),
                     content: $button.data('scenario-content')
                 };
-                fileName = $button.data('scenario-file-name');
                 $scenarioTitle.val(scenario.title);
                 $scenarioContent.val(scenario.content);
             });
@@ -28,10 +26,7 @@
                     title: $scenarioTitle.val(),
                     content: $scenarioContent.val().split("\n")
                 };
-
-                $.ajax("http://localhost:8080/updateScenario?fileName=" + fileName +"&scenarioTitle=" +
-                        encodeURIComponent(scenario.title), {
-
+                $.ajax("http://localhost:8080/updateScenario?fileName=${file.fileName}&scenarioTitle=" + encodeURIComponent(scenario.title), {
                     data: JSON.stringify(newscenario),
                     contentType : 'application/json',
                     type: 'POST',
@@ -47,12 +42,18 @@
 <body>
 
 <div class="page-header">
-    <h1>Scenarios found:</h1>
+    <h1>Scenarios in '${file.title}'</h1>
 </div>
 
 <#include "commit.ftl">
 
 <div class="well">
+    <p>Filename: ${file.fileName}</p>
+    <p>
+    <#list file.description as descriptionLine>
+            ${descriptionLine}<br>
+        </#list>
+    </p>
     <a href="/getFiles" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
 </div>
 <table class="table table-striped">
@@ -62,20 +63,18 @@
     <th></th>
     </thead>
     <tbody>
-    <#list extendedScenarios as scenarioWithFileName>
+    <#list file.scenarios as scenario>
     <tr>
         <td class="title">
-            ${scenarioWithFileName.scenario.title} <br>
-            Feature file name: ${scenarioWithFileName.fileName}
+        ${scenario.title}
         </td>
         <td class="content">
-            <#list scenarioWithFileName.scenario.content as contentLine>${contentLine}<br></#list>
+            <#list scenario.content as contentLine>${contentLine}<br></#list>
 
         </td>
         <td>
-            <button data-scenario="${scenarioWithFileName.scenario.title?html}"
-                    data-scenario-content="${((scenarioWithFileName.scenario.content)?join("\n"))?html}"
-                    data-scenario-file-name="${(scenarioWithFileName.fileName)?html}"
+            <button data-scenario="${scenario.title?html}"
+                    data-scenario-content="${((scenario.content)?join("\n"))?html}"
                     data-toggle="modal" data-target="#scenario-editor"
                     class="btn btn-default scenario-edit"/>
 
