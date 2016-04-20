@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" style="padding-bottom: 20px">
     <div class="col-md-10">
         <div class="input-group">
             <span class="input-group-addon" id="basic-addon3">Commit message: </span>

@@ -26,6 +26,28 @@
 
     <#include "commit.ftl">
 
+    <form method="GET" action="/history">
+        <div class="row" style="padding-bottom: 20px">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon3">Get history</span>
+                            <input type="number" class="form-control" id="basic-url" aria-describedby="basic-addon3" name="numberOfCommits">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-default">Go</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                Commits are numbered from 0, starting from the latest commit
+            </div>
+        </div>
+    </form>
+
     <table class="table table-striped">
         <thead>
             <th>Filename</th>

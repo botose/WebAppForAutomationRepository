@@ -26,6 +26,7 @@ public class WebAppController {
     private static final String REPOSITORIES_URL = "/repositories";
     private static final String LOCAL_REPO_URL = "/localRepo";
     private static final String GIT_REPO_URL = "/git";
+
     private static List<File> files;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -138,6 +139,22 @@ public class WebAppController {
             return true;
         }
         return false;
+    }
+
+    @RequestMapping(value="/history", method = RequestMethod.GET)
+    public String getHistory(@RequestParam(name = "numberOfCommits") int numberOfCommits, ModelMap map) throws IOException {
+
+        RestApiConnector restApiConnector = new RestApiConnector();
+        restApiConnector.doCall(ROOT_API_URL + GIT_REPO_URL + "/history?numberOfCommit=" + numberOfCommits, HttpMethod.GET);
+
+        if (ifError(map, restApiConnector)) {
+            map.addAttribute("errorMessage", "Failed to retrive history for that commit");
+            return "history";
+        }
+
+        map.addAttribute("history", restApiConnector.getResponse());
+
+        return "history";
     }
 
     @RequestMapping(value="/addCommitPush", method = RequestMethod.GET)
