@@ -65,7 +65,7 @@
     <#list extendedScenarios as scenarioWithFileName>
     <tr>
         <td class="title">
-            ${scenarioWithFileName.scenario.title} <br>
+        ${scenarioWithFileName.scenario.title} <br>
             Feature file name: ${scenarioWithFileName.fileName}
         </td>
         <td class="content">

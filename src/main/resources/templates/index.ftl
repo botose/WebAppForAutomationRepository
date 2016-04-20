@@ -19,7 +19,7 @@
         <label for="for-repository-url">Repository URL</label>
         <input type="text" class="form-control" id="repository-url" name="repository-url" placeholder=""/>
         <label for="for-email-address">Email address</label>
-        <input type="email" class="form-control" id="email-address" name="email-address" placeholder=""/>
+        <input type="text" class="form-control" id="email-address" name="email-address" placeholder=""/>
     </div>
     <div class="form-group">
         <label for="for-password">Password</label>
